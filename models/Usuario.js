@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 //https://www.npmjs.com/package/bcrypt
 import bcrypt from 'bcrypt';
 import generarId from '../helper/generarId.js';
-const usuarioSchema = mongoose.Schema({
+const usuarioShema = mongoose.Schema({
     nombre: {
         type: String,
         required: true,
@@ -62,6 +62,6 @@ usuarioShema.pre('save', async function (next) {
 usuarioShema.methods.comprobarPassword = async function (passwordFormulario) {
     return await bcrypt.compare(passwordFormulario, this.password);
 };
-const Usuario = mongoose.model('Usuario', usuarioSchema);
+const Usuario = mongoose.model('Usuario', usuarioShema);
 
 export default Usuario;

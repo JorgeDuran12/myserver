@@ -18,5 +18,6 @@ const ventaShema = mongoose.Schema(
         timestamps: true,
     }
 );
+
 const Venta = mongoose.model('Venta', ventaShema);
 export default Venta;
