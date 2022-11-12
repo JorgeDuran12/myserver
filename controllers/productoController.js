@@ -32,32 +32,47 @@ const createProductos = async (req, res) => {
 
 const getProductos = async (req, res) => {
     try {
-        const productos = await Producto.find();
-        res.send(productos);
+    const productos = await Producto.find();
+    res.send(productos);
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({ message: error.message });
+    console.log(error.message);
+    return res.status(500).json({ message: error.message });
     }
 };
 
 const updateProductos = async (req, res) => {
+    const { id, nombre, description, precio, stock } = req.body;
     try {
-        const updatedProduct = await Producto.findByIdAndUpdate(req.params.id,
-            req.body,
-            {
-                new: true,
-            }
-        );
-        return res.send(updatedProduct);
+        const updateProducto = await Producto.findById(id);
+        // console.log(updatePlato);
+        updateProducto.nombre = nombre;
+        updateProducto.description = description;
+        updateProducto.precio = precio;
+        updateProducto.precio = stock;
+        if (req.files.image) {
+            await deleteImage(updateProducto.image.public_id);
+
+            const result = await uploadImage(req.files.image.tempFilePath);
+            await fs.remove(req.files.image.tempFilePath);
+
+            updateProducto.image = {
+                url: result.secure_url,
+                public_id: result.public_id,
+            };
+            await updateProducto.save();
+            return res.status(204).json(updatePlato);
+        }
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        console.log(error.message);
     }
 };
 
 const deleteProductos = async (req, res) => {
     try {
-        const productRemoved = await Producto.findByIdAndDelete(req.params.id); if (!productRemoved) {
+        const productRemoved = await Producto.findByIdAndDelete(req.params.id); 
+        if (!productRemoved) {
             const error = new Error("Token no valido");
+            
             return res.sendStatus(404);
         } else {
             if (productRemoved.image.public_id) {
